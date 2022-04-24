@@ -14,8 +14,30 @@ export async function create(req: Request, res: Response) {
     } else if (e === "conflict") {
       res.sendStatus(409);
     } else {
-      console.log(e);
       res.sendStatus(404);
     }
+  }
+}
+
+export async function login(req: Request, res: Response) {
+  const { user } = req.body;
+
+  try {
+    const token = await userService.login(user);
+    res.status(200).send(token);
+  } catch (e) {
+    res.sendStatus(500);
+  }
+}
+
+export async function validateSession(req: Request, res: Response) {
+  const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer ", "");
+
+  try {
+    await userService.validateSession(token);
+    res.sendStatus(200);
+  } catch (e) {
+    res.sendStatus(401);
   }
 }
